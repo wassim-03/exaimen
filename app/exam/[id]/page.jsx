@@ -1,9 +1,11 @@
 // app/exam/[id]/page.jsx
 'use client'
+import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function ExamenPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const tema = searchParams.get('tema')
   const rawPreguntas = searchParams.get('preguntas')
@@ -26,9 +28,22 @@ export default function ExamenPage() {
     })
     const data = await res.json()
     // Aquí podrías guardar resultado y redirigir a /result/:id
-    console.log(data)
+    const query = new URLSearchParams({
+        resultado: encodeURIComponent(JSON.stringify(data)),
+        tema,
+      }).toString()
+      
+      router.push(`/result/${Date.now()}?${query}`)
     setCorrigiendo(false)
   }
+
+  if (!tema || !preguntas.length) {
+    return (
+      <main className="min-h-screen bg-white p-6 flex items-center justify-center">
+        <p className="text-red-600 text-lg">Datos del examen no válidos o incompletos.</p>
+      </main>
+    )
+  }  
 
   return (
     <main className="min-h-screen bg-white p-6">

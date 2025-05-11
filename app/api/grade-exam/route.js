@@ -35,6 +35,10 @@ Formato en JSON así:
   "evaluacion": "..."
 }
 
+Formato ESTRICTO en JSON (sin explicaciones, sin etiquetas, sin comentarios):
+
+Devuelve SOLO el JSON sin ningún texto extra.
+
 Contenido del examen:
 ${preguntas.map((p, i) => `P: ${p.pregunta}\nR: ${respuestas[i]}`).join('\n\n')}
 `
@@ -46,8 +50,9 @@ ${preguntas.map((p, i) => `P: ${p.pregunta}\nR: ${respuestas[i]}`).join('\n\n')}
   })
 
   const output = completion.choices[0].message.content
-
+  console.log('Salida bruta de la IA:', output)
   try {
+    console.log('Salida bruta de la IA:', output)
     const resultado = JSON.parse(output)
     return new Response(JSON.stringify(resultado), { status: 200 })
   } catch (e) {
