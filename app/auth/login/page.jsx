@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
 
-  {const handleLogin = async () => {
+  const handleLogin = async () => {
     setLoading(true)
     const { error } = await supabase.auth.signInWithOtp({ email })
 
@@ -19,7 +19,7 @@ export default function LoginPage() {
     }
 
     setLoading(false)
-  }}
+  }
 
   return (
     <div className="max-w-md mx-auto mt-20 space-y-4">
