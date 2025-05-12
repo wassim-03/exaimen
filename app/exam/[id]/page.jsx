@@ -1,5 +1,6 @@
 // app/exam/[id]/page.jsx
 'use client'
+import { generateId } from '@/lib/utils/ids'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -33,7 +34,7 @@ export default function ExamenPage() {
         tema,
       }).toString()
       
-      router.push(`/result/${Date.now()}?${query}`)
+      router.push(`/result/${generateId()}?${query}`)
     setCorrigiendo(false)
   }
 

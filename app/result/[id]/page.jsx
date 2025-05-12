@@ -2,6 +2,7 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { generateId } from '@/lib/utils/ids'
 
 export default function ResultadoPage() {
   const searchParams = useSearchParams();
@@ -77,7 +78,7 @@ export default function ResultadoPage() {
                 )
               );
               router.push(
-                `/exam/${Date.now()}?tema=${encodeURIComponent(tema)}&preguntas=${encoded}`
+                `/exam/${generateId()}?tema=${encodeURIComponent(tema)}&preguntas=${encoded}`
               );
             }}
             className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
