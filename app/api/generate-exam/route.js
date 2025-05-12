@@ -13,22 +13,25 @@ export async function POST(req) {
   ...
 ]`
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4.1',
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.7,
-  })
-
-  const raw = response.choices[0].message.content
-
   try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4.1',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+    })
+
+    const raw = response.choices[0].message.content
     const preguntas = JSON.parse(raw)
+    
     return new Response(JSON.stringify({
-      id: Date.now(), // puedes usar uuid si prefieres
       tema,
       preguntas,
     }), { status: 200 })
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'Error al generar examen' }), { status: 500 })
+    console.error('Error generating exam:', e)
+    return new Response(JSON.stringify({ 
+      error: 'Error al generar examen',
+      details: process.env.NODE_ENV === 'development' ? e.message : undefined 
+    }), { status: 500 })
   }
 }
