@@ -7,40 +7,30 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     setLoading(true)
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    console.log("Cookies:", document.cookie);
+    const { error } = await supabase.auth.signUp({ email, password })
 
     if (error) {
-      toast.error('Error al iniciar sesión: ' + error.message)
+      toast.error('Error al registrarse: ' + error.message)
     } else {
-      // Guarda token en cookie
-      if (data?.session?.access_token) {
-        await fetch('/api/set-cookie', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ access_token: data.session.access_token })
-        })
-      }
-
-      console.log("Cookies 2:", document.cookie);
-
-      toast.success('¡Bienvenido! Redirigiendo...')
-      router.push('/dashboard/create-exam')
+      toast.success('¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.')
+      setTimeout(() => {
+        router.push('/auth/login')
+      }, 1500)
     }
     setLoading(false)
   }
 
   return (
     <div className="max-w-md mx-auto mt-20 space-y-4">
-      <h1 className="text-2xl font-bold">Iniciar sesión</h1>
+      <h1 className="text-2xl font-bold">Crear cuenta</h1>
       <input
         type="email"
         value={email}
@@ -57,19 +47,19 @@ export default function LoginPage() {
         onChange={e => setPassword(e.target.value)}
         placeholder="Contraseña"
         className="w-full p-2 border rounded"
-        autoComplete="current-password"
+        autoComplete="new-password"
         disabled={loading}
         aria-label="Contraseña"
       />
-      <Button onClick={handleLogin} disabled={loading || !email || !password}>
-        {loading ? 'Iniciando...' : 'Iniciar sesión'}
+      <Button onClick={handleSignup} disabled={loading || !email || !password}>
+        {loading ? 'Registrando...' : 'Registrarse'}
       </Button>
       <div className="text-sm text-center">
-        ¿No tienes cuenta?{' '}
-        <Link href="/auth/signup" className="underline hover:opacity-80">
-          Regístrate
+        ¿Ya tienes cuenta?{' '}
+        <Link href="/auth/login" className="underline hover:opacity-80">
+          Inicia sesión
         </Link>
       </div>
     </div>
   )
-}
+} 
