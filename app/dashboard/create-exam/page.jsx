@@ -7,6 +7,7 @@ import InputTema from '@/components/InputTema'
 import VistaPreviaExamen from '@/components/VistaPreviaExamen'
 import { Skeleton } from '@/components/ui/skeleton'
 import { generateExam } from '@/lib/services/exam'
+import { saveExam } from '@/lib/utils/db'
 
 export default function DashboardCreateExam() {
   const user = useUser()
@@ -32,10 +33,17 @@ export default function DashboardCreateExam() {
     setLoading(true)
     try {
       const data = await generateExam(tema)
-      setExamen(data)
-      toast.success('¡Examen generado correctamente!')
+      // Guardar en Supabase
+      const saved = await saveExam({
+        user_id: user.id,
+        topic: data.tema,
+        questions: data.preguntas,
+        config: {} // Puedes pasar filtros/dificultad si tienes
+      })
+      setExamen({ ...data, id: saved.id }) // Usa el id real de la BD
+      toast.success('¡Examen generado y guardado!')
     } catch (error) {
-      toast.error('Error al generar el examen')
+      toast.error('Error al generar o guardar el examen')
     } finally {
       setLoading(false)
     }

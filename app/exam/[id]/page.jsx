@@ -1,19 +1,23 @@
 // app/exam/[id]/page.jsx
 'use client'
 import { generateId } from '@/lib/utils/ids'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useUser } from '@/lib/hooks/useUser'
 
 export default function ExamenPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const params = useParams()
+  const examId = params.id
   const tema = searchParams.get('tema')
   const rawPreguntas = searchParams.get('preguntas')
   const preguntas = rawPreguntas ? JSON.parse(decodeURIComponent(rawPreguntas)) : []
 
   const [respuestas, setRespuestas] = useState(preguntas.map(() => ''))
   const [corrigiendo, setCorrigiendo] = useState(false)
+  const user = useUser()
 
   const handleChange = (index, value) => {
     const nuevas = [...respuestas]
@@ -28,13 +32,28 @@ export default function ExamenPage() {
       body: JSON.stringify({ tema, preguntas, respuestas }),
     })
     const data = await res.json()
-    // Aquí podrías guardar resultado y redirigir a /result/:id
+
+    if (user) {
+      const { saveAnswer } = await import('@/lib/utils/db')
+      try {
+        await saveAnswer({
+          user_id: user.id,
+          exam_id: examId,
+          answers: respuestas,
+          score: data.nota_final,
+          feedback: data.evaluacion
+        })
+      } catch (e) {
+        console.error('Error guardando resultado:', e)
+      }
+    }
+
+    // Redirigir al resultado
     const query = new URLSearchParams({
-        resultado: encodeURIComponent(JSON.stringify(data)),
-        tema,
-      }).toString()
-      
-      router.push(`/result/${generateId()}?${query}`)
+      resultado: encodeURIComponent(JSON.stringify(data)),
+      tema,
+    }).toString()
+    router.push(`/result/${generateId()}?${query}`)
     setCorrigiendo(false)
   }
 
