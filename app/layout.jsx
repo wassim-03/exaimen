@@ -4,8 +4,8 @@ import { Toaster } from 'sonner'
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Navbar />
         <main className="p-4">{children}</main>
         <Toaster richColors position="top-center" />

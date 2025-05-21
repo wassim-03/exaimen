@@ -1,17 +1,26 @@
 "use client"
 import Link from 'next/link'
 import { useUser } from '../lib/hooks/useUser'
-import { LogOut } from 'lucide-react'
+import { LogOut, PlusCircle, FileText, User } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useRef, useEffect } from "react"
+import { Badge } from '@/components/ui/badge'
+import { Beaker } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const USER_ICON_URL = "https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
+
+const navLinks = [
+  { href: '/dashboard/create-exam', label: 'Crear examen', icon: <PlusCircle className="w-5 h-5" /> },
+  { href: '/dashboard/my-exams', label: 'Mis exámenes', icon: <FileText className="w-5 h-5" /> },
+]
 
 export default function Navbar() {
   const user = useUser()
   const router = useRouter()
+  const pathname = usePathname()
   const [loggingOut, setLoggingOut] = useState(false)
 
   const handleLogout = async () => {
@@ -29,29 +38,41 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full border-b p-4">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold hover:opacity-80 transition">
+    <nav className="w-full flex items-center justify-between px-6 py-4 bg-white shadow-sm">
+      <div className="flex items-center gap-2">
+        <Link href="/" className="font-bold text-xl text-blue-700 flex items-center gap-2">
           exAImen
+          <Badge variant="outline" className="ml-2 flex items-center gap-1">
+            <Beaker className="w-3 h-3 text-blue-500" />
+            beta
+          </Badge>
         </Link>
-        <div className="flex items-center gap-4 text-sm">
-          {!user && (
-            <>
-              <Link href="/auth/login" className="hover:underline">
-                Login
-              </Link>
-              <Link href="/auth/signup" className="hover:underline">
-                Sign Up
-              </Link>
-            </>
-          )}
-          <Link href="/dashboard" className="hover:underline">
-            Dashboard
+      </div>
+      <div className="flex items-center gap-4">
+        {user && navLinks.map(link => (
+          <Link key={link.href} href={link.href}>
+            <Button
+              variant={pathname.startsWith(link.href) ? "secondary" : "ghost"}
+              className="flex items-center gap-2"
+            >
+              {link.icon}
+              {link.label}
+            </Button>
           </Link>
-          {user && (
-            <ProfileMenu user={user} onLogout={handleLogout} loggingOut={loggingOut} />
-          )}
-        </div>
+        ))}
+        {!user && (
+          <>
+            <Link href="/auth/login">
+              <Button variant="ghost">Iniciar sesión</Button>
+            </Link>
+            <Link href="/auth/signup">
+              <Button variant="outline">Registrarse</Button>
+            </Link>
+          </>
+        )}
+        {user && (
+          <ProfileMenu user={user} onLogout={handleLogout} loggingOut={loggingOut} />
+        )}
       </div>
     </nav>
   )
@@ -110,6 +131,15 @@ function ProfileMenu({ user, onLogout, loggingOut }) {
                 }}
               >
                 <span>⚙️</span> Editar perfil
+              </button>
+              <button
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                onClick={() => {
+                  setOpen(false)
+                  router.push("/dashboard/my-exams")
+                }}
+              >
+                <span>📝</span> Mis exámenes
               </button>
               <button
                 className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600"

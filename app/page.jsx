@@ -6,6 +6,7 @@ import { useUser } from '@/lib/hooks/useUser'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles, BookOpen, UserPlus } from 'lucide-react'
+import PricingTable from '@/components/PricingTable'
 
 export default function HomePage() {
   const router = useRouter()
@@ -37,7 +38,7 @@ export default function HomePage() {
             Crea exámenes personalizados sobre cualquier tema y recibe feedback instantáneo. Ideal para estudiantes, docentes y autodidactas.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <Link href="/auth/register" passHref>
+            <Link href="/auth/signup" passHref>
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-full shadow-lg transition">
                 <UserPlus className="w-5 h-5 mr-2" />
                 Regístrate gratis
@@ -95,6 +96,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      <PricingTable />
 
       {/* Footer */}
       <footer className="py-8 text-center text-gray-400 text-sm">
